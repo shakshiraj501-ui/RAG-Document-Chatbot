@@ -2,10 +2,21 @@ import streamlit as st
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
+from google import genai
 import faiss
 import numpy as np
+import os
 
 st.title("🤖 RAG Document Chatbot")
+
+# Connect Gemini
+api_key = os.getenv("GEMINI_API_KEY")
+
+if not api_key:
+    st.error("Gemini API key not found.")
+    st.stop()
+
+client = genai.Client(api_key=api_key)
 
 uploaded_file = st.file_uploader(
     "Upload your PDF",
@@ -33,7 +44,7 @@ if uploaded_file:
 
     st.success(f"PDF divided into {len(chunks)} chunks! ✅")
 
-    # Load embedding model
+    # Create embeddings
     with st.spinner("Creating embeddings..."):
         model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -42,7 +53,7 @@ if uploaded_file:
             convert_to_numpy=True
         )
 
-    # Create FAISS index
+    # Create FAISS vector database
     dimension = embeddings.shape[1]
 
     index = faiss.IndexFlatL2(dimension)
@@ -60,18 +71,52 @@ if uploaded_file:
 
     if question:
 
+        # Convert question to embedding
         question_embedding = model.encode(
             [question],
             convert_to_numpy=True
         ).astype("float32")
 
+        # Search relevant chunks
         distances, indices = index.search(
             question_embedding,
             k=3
         )
 
-        st.subheader("🔍 Relevant Information")
+        relevant_text = ""
 
         for i in indices[0]:
-            st.write(chunks[i])
-            st.write("---")
+            relevant_text += chunks[i] + "\n\n"
+
+        # Generate answer using Gemini
+        with st.spinner("Generating answer... 🤖"):
+
+            prompt = f"""
+You are a helpful document assistant.
+
+Answer the user's question using ONLY the information
+provided in the document context below.
+
+If the answer is not present in the context, say:
+"I could not find this information in the uploaded PDF."
+
+Document Context:
+{relevant_text}
+
+User Question:
+{question}
+
+Give a clear and concise answer.
+"""
+
+            response = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=prompt
+            )
+
+        st.subheader("🤖 Answer")
+        st.write(response.text)
+
+        # Show retrieved information
+        with st.expander("🔍 View Relevant Information"):
+            st.write(relevant_text)
