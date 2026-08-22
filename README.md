@@ -1,60 +1,47 @@
-# 🤖 RAG Document Chatbot
+RAG Document Chatbot
 
-A simple Retrieval-Augmented Generation (RAG) based document chatbot built using Python, Streamlit, Sentence Transformers and FAISS.
+A Retrieval-Augmented Generation (RAG) based chatbot that allows users to upload PDF documents and ask questions based on their content.
 
-## 📌 Features
+Features
+Upload PDF documents
+Extract text from PDFs
+Split text into chunks
+Generate embeddings using Sentence Transformers
+Store embeddings in FAISS Vector Database
+Ask questions based on the uploaded document
+User-friendly Streamlit interface
+Gemini API integration for AI-generated responses
+Technologies Used
+Python
+Streamlit
+PyPDF
+Sentence Transformers
+FAISS
+Google Gemini API
+LangChain
+How It Works
+Upload a PDF document.
+The application extracts text from the PDF.
+The text is divided into smaller chunks.
+Embeddings are generated using Sentence Transformers.
+The embeddings are stored in a FAISS vector database.
+When a user asks a question, the application finds relevant document chunks.
+Gemini generates an answer using the retrieved context.
+Installation
 
-- Upload PDF documents
-- Extract text from PDF
-- Divide PDF into smaller chunks
-- Generate text embeddings
-- Store embeddings using FAISS
-- Search relevant information from the PDF
-- Ask questions about the uploaded document
+Clone the repository and install the required dependencies:
 
-## 🛠️ Technologies Used
-
-- Python
-- Streamlit
-- PyPDF
-- LangChain Text Splitters
-- Sentence Transformers
-- FAISS
-- NumPy
-
-## ⚙️ How It Works
-
-1. **Upload PDF**  
-   The user uploads a PDF document.
-
-2. **Text Extraction**  
-   The system extracts text from all pages of the PDF using PyPDF.
-
-3. **Text Chunking**  
-   The extracted text is divided into smaller chunks using LangChain Text Splitter.
-
-4. **Generate Embeddings**  
-   Sentence Transformers converts each text chunk into numerical vectors called embeddings.
-
-5. **Create Vector Database**  
-   FAISS stores these embeddings and allows fast similarity search.
-
-6. **Ask a Question**  
-   The user enters a question related to the uploaded PDF.
-
-7. **Similarity Search**  
-   The question is converted into an embedding and FAISS finds the most relevant chunks.
-
-8. **Display Relevant Information**  
-   The application displays the relevant information retrieved from the PDF.
-
-### 🔄 RAG Workflow
-
-PDF → Text Extraction → Chunking → Embeddings → FAISS → Question → Similarity Search → Relevant Information
-
-## 🚀 How to Run
-
-Install the required libraries:
-
-```bash
 pip install -r requirements.txt
+
+Run the application:
+
+python -m streamlit run app.py
+Project Structure
+RAG_Application/
+│── app.py
+│── requirements.txt
+│── README.md
+│── venv/
+Author
+
+Sakshi Singh
